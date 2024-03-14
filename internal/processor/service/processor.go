@@ -67,6 +67,13 @@ func (s *Processor) Process(transactions []*models.Transaction) (*models.Transac
 }
 
 func (s *Processor) SaveResult(result *models.TransactionResult) error {
+
+	err := s.repository.Save(result)
+	if err != nil {
+		println("error trying to save account")
+		return err
+	}
+
 	return nil
 }
 
@@ -83,8 +90,8 @@ func (s *Processor) getCSVFromS3() (*s3.GetObjectOutput, error) {
 	})
 
 	if err != nil {
-		fmt.Println("Error al obtener el objeto desde S3:", err)
-		return nil, errors.New("error intentando obtener el archivo desde S3")
+		fmt.Println("Error trying to retrieve object from S3:", err)
+		return nil, errors.New("error trying to retrieve object from S3")
 	}
 	return resp, nil
 }
@@ -97,7 +104,7 @@ func (s *Processor) getTransactionsFromFile(file *s3.GetObjectOutput) ([]*models
 
 	_, err := csvReader.Read()
 	if err != nil {
-		fmt.Println("Error al leer la primera línea del CSV:", err)
+		fmt.Println("Error trying to read first line of CSV files:", err)
 		return nil, err
 	}
 
@@ -107,13 +114,13 @@ func (s *Processor) getTransactionsFromFile(file *s3.GetObjectOutput) ([]*models
 			break
 		}
 		if err != nil {
-			fmt.Println("Error al leer la línea del CSV:", err)
+			fmt.Println("Error trying to read CSV line:", err)
 			return nil, err
 		}
 
 		amount, err := s.parseAmount(record[2])
 		if err != nil {
-			return nil, errors.New("error convirtiendo el monto de la trx")
+			return nil, errors.New("error parsing trx amount")
 		}
 
 		transaction := &models.Transaction{
@@ -140,8 +147,8 @@ func (s *Processor) parseAmount(amount string) (*float64, error) {
 
 	floatValue, err := strconv.ParseFloat(amount, 64)
 	if err != nil {
-		fmt.Println("Error al convertir el string a float64:", err)
-		return nil, errors.New("error convirtiendo montos")
+		fmt.Println("Error trying to parse amount:", err)
+		return nil, errors.New("error parsing amounts")
 	}
 
 	return &floatValue, nil
