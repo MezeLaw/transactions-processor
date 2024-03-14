@@ -37,8 +37,6 @@ func (e *Email) SendEmail(ctx context.Context, event events.DynamoDBEvent) error
 
 			accountInfo := record.Change.NewImage
 
-			//accountInfoJson, err := json.Marshal(accountInfo)
-
 			if err != nil {
 				log.Println("an error occurred trying to marshall received item info")
 				return err
@@ -46,28 +44,37 @@ func (e *Email) SendEmail(ctx context.Context, event events.DynamoDBEvent) error
 			balance := accountInfo["balance"].String()
 			averageDebit := accountInfo["average_debit"].String()
 			averageCredit := accountInfo["average_credit"].String()
+			jan := accountInfo["monthly_transactions"].Map()["January"].String()
+			feb := accountInfo["monthly_transactions"].Map()["February"].String()
+			mar := accountInfo["monthly_transactions"].Map()["March"].String()
+			apr := accountInfo["monthly_transactions"].Map()["April"].String()
+			may := accountInfo["monthly_transactions"].Map()["May"].String()
+			jun := accountInfo["monthly_transactions"].Map()["June"].String()
+			jul := accountInfo["monthly_transactions"].Map()["July"].String()
+			aug := accountInfo["monthly_transactions"].Map()["August"].String()
 			sept := accountInfo["monthly_transactions"].Map()["September"].String()
+			oct := accountInfo["monthly_transactions"].Map()["October"].String()
+			nov := accountInfo["monthly_transactions"].Map()["November"].String()
+			dec := accountInfo["monthly_transactions"].Map()["December"].String()
 
-			messageInfo := `	Transactions info 
-								Total balance is: ` + balance + `
-								Average debit amount: ` + averageDebit + `
-								Average credit amount: ` + averageCredit + `
-								Number of transactions in January: ` + "jan" + `
-								Number of transactions in February: ` + "feb" + `
-								Number of transactions in March: ` + "mar" + `
-								Number of transactions in April: ` + "apr" + `
-								Number of transactions in May: ` + "may" + `
-								Number of transactions in June: ` + "jun" + `
-								Number of transactions in July: ` + "jul" + `
-								Number of transactions in August:` + "aug" + `
-								Number of transactions in September: ` + sept + `
-								Number of transactions in October: ` + "oct" + `
-								Number of transactions in November: ` + "nov" + `
-								Number of transactions in December: ` + "dec" + `
-								<img src="https://trx-public-bucket.s3.amazonaws.com/download.png" alt="Stori Logo">
+			messageInfo := `
+							Total balance is: ` + balance + `
+							Average debit amount: ` + averageDebit + `
+							Average credit amount: ` + averageCredit + `
+
+							Number of transactions in January: ` + jan + `
+							Number of transactions in February: ` + feb + `
+							Number of transactions in March: ` + mar + `	
+							Number of transactions in April: ` + apr + `
+							Number of transactions in May: ` + may + `
+							Number of transactions in June: ` + jun + `
+							Number of transactions in July: ` + jul + `
+							Number of transactions in August:` + aug + `
+							Number of transactions in September: ` + sept + `
+							Number of transactions in October: ` + oct + `
+							Number of transactions in November: ` + nov + `
+							Number of transactions in December: ` + dec + `
 							`
-			// Crear cuerpo del correo electrónico
-			//bodyText := fmt.Sprintf("%s", messageInfo)
 
 			input := &ses.SendEmailInput{
 				Destination: &ses.Destination{
@@ -94,7 +101,7 @@ func (e *Email) SendEmail(ctx context.Context, event events.DynamoDBEvent) error
 				return err
 			}
 
-			fmt.Println("Correo electrónico enviado correctamente")
+			fmt.Println("Email was sent successfully")
 		}
 	}
 	return nil
