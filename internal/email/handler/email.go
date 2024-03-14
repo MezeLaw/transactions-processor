@@ -46,6 +46,7 @@ func (e *Email) SendEmail(ctx context.Context, event events.DynamoDBEvent) error
 			balance := accountInfo["balance"].String()
 			averageDebit := accountInfo["average_debit"].String()
 			averageCredit := accountInfo["average_credit"].String()
+			sept := accountInfo["monthly_transactions"].Map()["September"].String()
 
 			messageInfo := `	Transactions info 
 								Total balance is: ` + balance + `
@@ -59,14 +60,14 @@ func (e *Email) SendEmail(ctx context.Context, event events.DynamoDBEvent) error
 								Number of transactions in June: ` + "jun" + `
 								Number of transactions in July: ` + "jul" + `
 								Number of transactions in August:` + "aug" + `
-								Number of transactions in September: ` + "sept" + `
+								Number of transactions in September: ` + sept + `
 								Number of transactions in October: ` + "oct" + `
 								Number of transactions in November: ` + "nov" + `
 								Number of transactions in December: ` + "dec" + `
 								<img src="https://trx-public-bucket.s3.amazonaws.com/download.png" alt="Stori Logo">
 							`
 			// Crear cuerpo del correo electrónico
-			bodyText := fmt.Sprintf("%s", messageInfo)
+			//bodyText := fmt.Sprintf("%s", messageInfo)
 
 			input := &ses.SendEmailInput{
 				Destination: &ses.Destination{
@@ -77,7 +78,7 @@ func (e *Email) SendEmail(ctx context.Context, event events.DynamoDBEvent) error
 				Message: &ses.Message{
 					Body: &ses.Body{
 						Text: &ses.Content{
-							Data: aws.String(bodyText),
+							Data: aws.String(messageInfo),
 						},
 					},
 					Subject: &ses.Content{
