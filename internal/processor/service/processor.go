@@ -189,7 +189,7 @@ func (s *Processor) getExtraInfo(transactions []*models.Transaction) models.Extr
 	creditQty := 0
 
 	for _, trx := range transactions {
-		if trx.Amount > 0 {
+		if trx.Amount < 0 {
 			totalDebit += trx.Amount
 			debitQty += 1
 		}
