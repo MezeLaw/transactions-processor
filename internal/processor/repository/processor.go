@@ -6,15 +6,16 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"log"
+	"strconv"
 	"transactions-processor/internal/processor/models"
 )
 
 type Account struct {
-	ID                  string         `json:"id"`
-	Balance             string         `json:"balance"`
-	MonthlyTransactions map[string]int `json:"monthly_transactions"`
-	AverageDebit        string         `json:"average_debit"`
-	AverageCredit       string         `json:"average_credit"`
+	ID                  string            `json:"id"`
+	Balance             string            `json:"balance"`
+	MonthlyTransactions map[string]string `json:"monthly_transactions"`
+	AverageDebit        string            `json:"average_debit"`
+	AverageCredit       string            `json:"average_credit"`
 }
 
 type Processor struct {
@@ -35,7 +36,7 @@ func (r *Processor) Save(transactionResult *models.TransactionResult) error {
 	item := Account{
 		ID:                  transactionResult.AccountID,
 		Balance:             transactionResult.Balance,
-		MonthlyTransactions: transactionResult.ExtraInformation.MonthlyTransactions,
+		MonthlyTransactions: r.mapResultMonthlyTransactionsToAccountMonthlyTransactions(transactionResult.ExtraInformation.MonthlyTransactions),
 		AverageDebit:        transactionResult.ExtraInformation.AverageDebit,
 		AverageCredit:       transactionResult.ExtraInformation.AverageCredit,
 	}
@@ -58,4 +59,17 @@ func (r *Processor) Save(transactionResult *models.TransactionResult) error {
 	}
 
 	return nil
+}
+
+func (r *Processor) mapResultMonthlyTransactionsToAccountMonthlyTransactions(trxs map[string]int) map[string]string {
+
+	transactionsByMonth := map[string]string{}
+
+	for month, trxQty := range trxs {
+
+		transactionsByMonth[month] = strconv.Itoa(trxQty)
+
+	}
+
+	return transactionsByMonth
 }

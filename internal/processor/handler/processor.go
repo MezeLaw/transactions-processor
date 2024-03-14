@@ -39,12 +39,6 @@ func (h *Processor) Handle(ctx context.Context) (string, error) {
 
 	result, err := h.service.Process(transactions)
 
-	println("Balance> ", result.Balance)
-	println("Average Debit", result.ExtraInformation.AverageDebit)
-	println("Average Credit", result.ExtraInformation.AverageCredit)
-	println("September Qty", result.ExtraInformation.MonthlyTransactions["September"])
-	println("October Qty", result.ExtraInformation.MonthlyTransactions["October"])
-
 	if err != nil {
 		log.Println(processingError)
 		return "Processing Error", errors.New(processingError)
