@@ -192,6 +192,7 @@ func (s *Processor) getExtraInfo(transactions []*models.Transaction) models.Extr
 		if trx.Amount < 0 {
 			totalDebit += trx.Amount
 			debitQty += 1
+			trxByMonth[s.getTransactionMonth(trx.Date)] = trxByMonth[s.getTransactionMonth(trx.Date)] + 1
 		} else {
 			totalCredit += trx.Amount
 			creditQty += 1
