@@ -32,6 +32,7 @@ const (
 )
 
 type ProcessorRepository interface {
+	Save(*models.TransactionResult) error
 }
 
 type Processor struct {
